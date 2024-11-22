@@ -1,0 +1,233 @@
+<?php require_once 'views/layout/header.php'; ?>
+<?php require_once 'views/layout/menu.php'; ?>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+            <div class="position-sticky">
+                <form class="p-3" id="searchForm">
+                    <h5 class="text-primary">Tìm Kiếm Khuyến Mãi</h5>
+                    <div class="mb-3">
+                        <label for="searchName" class="form-label">Tìm Theo Tên Khuyến Mãi</label>
+                        <input type="text" class="form-control" id="searchName" placeholder="Nhập tên khuyến mãi">
+                    </div>
+                    <div class="mb-3">
+                        <label for="searchCode" class="form-label">Tìm Theo Mã Khuyến Mãi</label>
+                        <input type="text" class="form-control" id="searchCode" placeholder="Nhập mã khuyến mãi">
+                    </div>
+                    <button type="button" class="btn btn-primary w-100" onclick="searchTable()">Tìm Kiếm</button>
+                </form>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+    <section class="khuyen-mai-section py-5">
+        <div class="container">
+            <h1 class="text-center mb-5 section-title">Danh Sách Khuyến Mãi</h1>
+            <div class="row g-4">
+                <?php if (!empty($khuyenMaiList)): ?>
+                    <?php foreach ($khuyenMaiList as $khuyenMai): ?>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="promotion-banner">
+                                <div class="banner-content">
+                                    <h2 class="text-truncate"><?= htmlspecialchars($khuyenMai['ten_khuyen_mai']); ?></h2>
+                                    <p class="text-truncate"><?= htmlspecialchars($khuyenMai['mo_ta']); ?></p>
+                                    <p class="discount">Giảm: <?= htmlspecialchars($khuyenMai['discount_value']); ?>%</p>
+                                    <p>Thời gian: <?= htmlspecialchars($khuyenMai['ngay_bat_dau']); ?> - <?= htmlspecialchars($khuyenMai['ngay_ket_thuc']); ?></p>
+                                    <p>Mã: 
+                                        <span id="code-<?= $khuyenMai['id']; ?>" 
+                                              class="badge text-white code-badge">
+                                              <?= htmlspecialchars($khuyenMai['ten_khuyen_mai']); ?>
+                                        </span>
+                                        <button class="btn btn-outline-light btn-sm mt-2" 
+                                            onclick="copyToClipboard('code-<?= $khuyenMai['id']; ?>')">
+                                        Copy mã
+                                    </button>
+                                    </p>
+                                    <span class="badge 
+                                        <?= $khuyenMai['trang_thai'] == 'active' ? 'bg-success' : 
+                                        ($khuyenMai['trang_thai'] == 'suspended' ? 'bg-warning text-dark' : 'bg-danger'); ?>">
+                                        <?= $khuyenMai['trang_thai'] == 'active' ? 'Đang hoạt động' : 
+                                        ($khuyenMai['trang_thai'] == 'suspended' ? 'Tạm dừng' : 'Đã hết hạn'); ?>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="col-12 text-center text-muted">
+                        Không có khuyến mãi nào.
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </section>
+</main>
+
+
+    </div>
+</div>
+
+<?php require_once 'views/layout/footer.php'; ?>
+
+<script>
+function copyToClipboard(elementId) {
+    const text = document.getElementById(elementId).innerText;
+    navigator.clipboard.writeText(text).then(() => {
+        alert('Đã sao chép: ' + text);
+    }).catch(err => {
+        console.error('Lỗi khi sao chép: ', err);
+    });
+}
+
+function searchTable() {
+    let inputName = document.getElementById('searchName').value.toLowerCase();
+    let inputCode = document.getElementById('searchCode').value.toLowerCase();
+    let table = document.getElementById('example1');
+    let tr = table.getElementsByTagName('tr');
+
+    for (let i = 1; i < tr.length; i++) {
+        let tdName = tr[i].getElementsByTagName('td')[1];
+        let tdCode = tr[i].getElementsByTagName('td')[7];
+        if (tdName || tdCode) {
+            let textValueName = tdName.textContent || tdName.innerText;
+            let textValueCode = tdCode.textContent || tdCode.innerText;
+            if ((textValueName.toLowerCase().indexOf(inputName) > -1 || inputName === '') &&
+                (textValueCode.toLowerCase().indexOf(inputCode) > -1 || inputCode === '')) {
+                tr[i].style.display = '';
+            } else {
+                tr[i].style.display = 'none';
+            }
+        }
+    }
+}
+
+$(function () {
+    $("#example1").DataTable({
+        "responsive": true,
+        "lengthChange": false,
+        "autoWidth": false,
+        "buttons": ["copy", "csv", "excel", "pdf", "print"]
+    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+});
+</script>
+
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(90deg, #c29958, #a47a50);
+    }
+    .table-hover tbody tr:hover {
+        background-color: #f0f8ff;
+        transition: background-color 0.3s;
+    }
+    .badge {
+        font-size: 0.9em;
+    }
+    .btn-sm {
+        font-size: 0.8em;
+    }
+    #sidebar .form-label {
+        font-weight: bold;
+    }
+    #sidebar .btn-primary {
+        background-color: #c29958;
+        border-color: #c29958;
+    }
+    .promotion-banner {
+    width: 100%;
+    height: 230px;
+    background: linear-gradient(135deg, #c29958, #000);
+    color: white;
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Section Title */
+.section-title {
+    color: #c29958;
+    font-size: 36px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-bottom: 3px solid #c29958;
+    display: inline-block;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+/* Promotion Banner */
+.promotion-banner {
+    width: 100%;
+    height: auto;
+    background: linear-gradient(135deg, #c29958, #3e3e3e);
+    color: white;
+    font-family: Arial, sans-serif;
+    padding: 20px 15px;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+}
+
+.promotion-banner:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
+}
+
+/* Banner Content */
+.promotion-banner .banner-content h2 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #ffe066;
+    text-transform: uppercase;
+}
+
+.promotion-banner .banner-content p {
+    font-size: 14px;
+    margin: 5px 0;
+    color: #f8f9fa;
+}
+
+.promotion-banner .banner-content .discount {
+    font-size: 18px;
+    font-weight: bold;
+    color: #ffcc33;
+}
+
+.promotion-banner .banner-content .code-badge {
+    background-color: #6c757d;
+    font-size: 14px;
+    padding: 5px 8px;
+    border-radius: 4px;
+}
+
+.promotion-banner .banner-content button {
+    margin-top: 10px;
+    padding: 5px 15px;
+    font-size: 14px;
+    color: #c29958;
+    border-color: #c29958;
+}
+
+.promotion-banner .banner-content button:hover {
+    background-color: #c29958;
+    color: white;
+    border-color: #c29958;
+}
+
+/* Grid Spacing */
+.row.g-4 {
+    margin-top: 20px;
+}
+
+
+</style>
