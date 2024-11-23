@@ -10,14 +10,16 @@
                     <h5 class="text-primary">Tìm Kiếm Khuyến Mãi</h5>
                     <div class="mb-3">
                         <label for="searchName" class="form-label">Tìm Theo Tên Khuyến Mãi</label>
-                        <input type="text" class="form-control" id="searchName" placeholder="Nhập tên khuyến mãi">
+                        <input type="text" class="form-control" id="searchName" placeholder="Nhập tên khuyến mãi"
+                            oninput="searchTable()">
                     </div>
                     <div class="mb-3">
                         <label for="searchCode" class="form-label">Tìm Theo Mã Khuyến Mãi</label>
-                        <input type="text" class="form-control" id="searchCode" placeholder="Nhập mã khuyến mãi">
+                        <input type="text" class="form-control" id="searchCode" placeholder="Nhập mã khuyến mãi"
+                            oninput="searchTable()">
                     </div>
-                    <button type="button" class="btn btn-primary w-100" onclick="searchTable()">Tìm Kiếm</button>
                 </form>
+
             </div>
         </nav>
 
@@ -31,24 +33,27 @@
                         <?php foreach ($khuyenMaiList as $khuyenMai): ?>
                         <div class="col-md-6 col-lg-4 col-12">
                             <div class="promotion-banner christmas-theme" aria-label="Thông tin khuyến mãi">
-                                <h2 class="text-truncate"><?= htmlspecialchars($khuyenMai['ten_khuyen_mai']); ?></h2>
+                                <h2 c lass="text-truncate"><?= htmlspecialchars($khuyenMai['ten_khuyen_mai']); ?></h2>
                                 <p class="text-truncate"><?= htmlspecialchars($khuyenMai['mo_ta']); ?></p>
-                                <p class="discount" style="font-size:30px;">🎄 Giảm: <?= htmlspecialchars($khuyenMai['discount_value']); ?>%</p>
-                                <p>Thời gian: <?= htmlspecialchars($khuyenMai['ngay_bat_dau']); ?> -
+                                <p class="discount" style="font-size:30px;">🎄 Uư đãi lên đến
+                                <p style="font-size:50px;">🎁<?= htmlspecialchars($khuyenMai['discount_value']); ?>%</p>
+                                </p>
+                                <p>Thời gian: Từ <?= htmlspecialchars($khuyenMai['ngay_bat_dau']); ?> đến
                                     <?= htmlspecialchars($khuyenMai['ngay_ket_thuc']); ?></p>
                                 <p>Mã:
                                     <span id="code-<?= $khuyenMai['id']; ?>" class="badge text-white code-badge">
-                                        <?= htmlspecialchars($khuyenMai['ten_khuyen_mai']); ?>
+                                        <?= htmlspecialchars($khuyenMai['ma_khuyen_mai']); ?>
                                     </span>
                                     <button class="btn btn-outline-light btn-sm mt-2"
                                         onclick="copyToClipboard('code-<?= $khuyenMai['id']; ?>')">
                                         Sao chép mã
                                     </button>
                                 </p>
-                                <span class="badge 
+                                <span
+                                    class="badge 
                                     <?= $khuyenMai['trang_thai'] == 'active' ? 'bg-success' : 
                                     ($khuyenMai['trang_thai'] == 'suspended' ? 'bg-warning text-dark' : 'bg-danger'); ?>">
-                                                                <?= $khuyenMai['trang_thai'] == 'active' ? 'Đang hoạt động' : 
+                                    <?= $khuyenMai['trang_thai'] == 'active' ? 'Đang hoạt động' : 
                                     ($khuyenMai['trang_thai'] == 'suspended' ? 'Tạm dừng' : 'Đã hết hạn'); ?>
                                 </span>
                             </div>
@@ -60,8 +65,12 @@
                             Không có khuyến mãi nào.
                         </div>
                         <?php endif; ?>
-                    </div>
+                    </div>  
                     <br>
+                    <div id="noResult" class="text-center text-muted" style="display: none;">
+                        Không có khuyến mãi nào phù hợp.
+                    </div>
+
                 </div>
                 <br> <br>
                 <br> <br>
@@ -88,6 +97,7 @@ function searchTable() {
     let inputName = document.getElementById('searchName').value.trim().toLowerCase();
     let inputCode = document.getElementById('searchCode').value.trim().toLowerCase();
     let promotions = document.querySelectorAll('.promotion-banner');
+    let hasResult = false;
 
     promotions.forEach(promotion => {
         let name = promotion.querySelector('h2').innerText.toLowerCase();
@@ -96,11 +106,18 @@ function searchTable() {
         if ((name.includes(inputName) || inputName === '') &&
             (code.includes(inputCode) || inputCode === '')) {
             promotion.parentElement.style.display = 'block';
+            hasResult = true;
         } else {
             promotion.parentElement.style.display = 'none';
         }
     });
+
+    // Hiển thị hoặc ẩn thông báo "không có kết quả"
+    document.getElementById('noResult').style.display = hasResult ? 'none' : 'block';
 }
+
+
+
 function generateSnowflakesInBanner() {
     const banners = document.querySelectorAll('.promotion-banner'); // Lấy tất cả các banner
     banners.forEach(banner => {
@@ -109,7 +126,7 @@ function generateSnowflakesInBanner() {
             let snowflake = document.createElement('div');
             snowflake.classList.add('snowflake');
             snowflake.textContent = '❄'; // Bông tuyết
-            snowflake.style.left = Math.random() * 100 + 'vw'; // Vị trí ngẫu nhiên theo chiều ngang
+            snowflake.style.left = Math.random() * 200 + 'vw'; // Vị trí ngẫu nhiên theo chiều ngang
             snowflake.style.animationDuration = Math.random() * 5 + 5 + 's'; // Thời gian rơi ngẫu nhiên
             snowflake.style.animationDelay = Math.random() * 10 + 's'; // Trễ ngẫu nhiên
 
@@ -130,7 +147,6 @@ window.onload = generateSnowflakesInBanner;
 
 // Gọi hàm để tạo bông tuyết khi trang được tải
 window.onload = generateSnowflakes;
-
 </script>
 
 <style>
@@ -147,12 +163,15 @@ window.onload = generateSnowflakes;
     flex-direction: column;
     justify-content: space-between;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    position: relative; /* Đảm bảo bông tuyết nằm trong banner */
+    position: relative;
+    /* Đảm bảo bông tuyết nằm trong banner */
 }
 
 .promotion-banner:hover {
-    transform: translateY(-10px); /* Nâng lên khi hover */
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4); /* Thêm bóng khi hover */
+    transform: translateY(-10px);
+    /* Nâng lên khi hover */
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    /* Thêm bóng khi hover */
 }
 
 .promotion-banner h2,
@@ -173,6 +192,7 @@ window.onload = generateSnowflakes;
 .promotion-banner .badge {
     margin-top: 10px;
 }
+
 .snowflake {
     position: absolute;
     color: white;
@@ -188,58 +208,74 @@ window.onload = generateSnowflakes;
         top: -10px;
         opacity: 1;
     }
+
     100% {
         top: 100%;
         opacity: 0;
     }
 }
+
 .promotion-banner h2 {
     font-size: 1.5rem;
     font-weight: bold;
-    text-transform: uppercase; /* Viết hoa tất cả các chữ cái */
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* Đổ bóng cho tiêu đề */
-    color: #ffffff; /* Đảm bảo chữ màu trắng */
-    transition: all 0.3s ease-in-out; /* Hiệu ứng chuyển đổi khi hover */
+    text-transform: uppercase;
+    /* Viết hoa tất cả các chữ cái */
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+    /* Đổ bóng cho tiêu đề */
+    color: #ffffff;
+    /* Đảm bảo chữ màu trắng */
+    transition: all 0.3s ease-in-out;
+    /* Hiệu ứng chuyển đổi khi hover */
 }
 
 .promotion-banner p {
     font-size: 1rem;
-    color: #ffdfba; /* Màu chữ mô tả */
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3); /* Đổ bóng cho mô tả */
+    color: #ffdfba;
+    /* Màu chữ mô tả */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    /* Đổ bóng cho mô tả */
 }
 
 .promotion-banner .discount {
     font-size: 1.1rem;
     font-weight: bold;
     color: #ffdfba;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); /* Đổ bóng cho discount */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    /* Đổ bóng cho discount */
 }
 
 .promotion-banner .badge {
     font-size: 0.9rem;
     font-weight: bold;
     text-transform: uppercase;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); /* Đổ bóng cho badge */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    /* Đổ bóng cho badge */
 }
 
 .promotion-banner:hover h2 {
-    color: #ff5f5f; /* Thay đổi màu tiêu đề khi hover */
-    text-shadow: 2px 2px 8px rgba(255, 87, 34, 0.8); /* Tăng độ đổ bóng khi hover */
+    color: #ff5f5f;
+    /* Thay đổi màu tiêu đề khi hover */
+    text-shadow: 2px 2px 8px rgba(255, 87, 34, 0.8);
+    /* Tăng độ đổ bóng khi hover */
 }
 
 .promotion-banner:hover p {
-    color: #fff7e6; /* Màu chữ mô tả thay đổi khi hover */
+    color: #fff7e6;
+    /* Màu chữ mô tả thay đổi khi hover */
 }
 
 .promotion-banner:hover .discount {
     color: #ffdfba;
-    text-shadow: 1px 1px 5px rgba(255, 87, 34, 0.8); /* Tăng độ đổ bóng khi hover */
+    text-shadow: 1px 1px 5px rgba(255, 87, 34, 0.8);
+    /* Tăng độ đổ bóng khi hover */
 }
 
 .promotion-banner:hover .badge {
-    background-color: #ff5f5f; /* Màu nền badge thay đổi khi hover */
-    color: #fff; /* Đổi màu chữ badge */
-    text-shadow: 2px 2px 5px rgba(255, 87, 34, 0.8); /* Tăng độ đổ bóng khi hover */
+    background-color: #ff5f5f;
+    /* Màu nền badge thay đổi khi hover */
+    color: #fff;
+    /* Đổi màu chữ badge */
+    text-shadow: 2px 2px 5px rgba(255, 87, 34, 0.8);
+    /* Tăng độ đổ bóng khi hover */
 }
-
 </style>
